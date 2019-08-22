@@ -1,13 +1,12 @@
 package com.ultra.java;
 
+import com.ultra.pojo.Person;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.Test;
-
-import com.ultra.pojo.Person;
 
 public class A040Lambda {
 
@@ -19,7 +18,7 @@ public class A040Lambda {
     // 没有参数的()不能省略()->{}
     @Test
     public void interfaceGrammar() {
-        String[] strings = { "q", "w", "2", "4", "f", "y", "e", "w" };
+        String[] strings = {"q", "w", "2", "4", "f", "y", "e", "w"};
         Arrays.sort(strings, (String str1, String str2) -> str1.compareTo(str2));
         System.out.println(Arrays.toString(strings));
     }

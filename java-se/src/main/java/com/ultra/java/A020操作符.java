@@ -1,12 +1,11 @@
 package com.ultra.java;
 
 public class A020操作符 {
-    /*
+    /**
      * 几乎所有的操作符都只能操作基本数据类型， 但是操作符"=","==","!="这些操作符能操作所有的对象， 除此之外，String类支持"+"和"+="。
      * 注意：System.out.println()中，"+"意味着“字符串连接”，如果 有必要，它还要执行“字符串转换”。
      */
-
-    static void f(Letter y) {
+    private static void f(Letter y) {
         y.c = 'z';
     }
 

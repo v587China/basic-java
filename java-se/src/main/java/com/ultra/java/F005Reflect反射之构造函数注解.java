@@ -1,11 +1,10 @@
 package com.ultra.java;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
+import com.ultra.java高级.Person;
 import org.junit.Test;
 
-import com.ultra.java高级.Person;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 public class F005Reflect反射之构造函数注解 {
 
