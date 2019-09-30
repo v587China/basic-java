@@ -26,6 +26,7 @@
 		<module>java-se</module>
 		<module>jdbc</module>
 		<module>web</module>
+		<module>design_pattern</module>
 	</modules>
 
 </project>
