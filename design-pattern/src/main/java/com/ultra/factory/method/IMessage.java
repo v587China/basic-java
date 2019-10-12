@@ -2,5 +2,6 @@ package com.ultra.factory.method;
 
 public interface IMessage {
 
-    void sendMessage();
+    void sendMessage(String message);
+
 }

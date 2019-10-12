@@ -9,8 +9,9 @@ import com.ultra.factory.abstr.impl.LinuxFactory;
 import com.ultra.factory.abstr.impl.WindowsFactory;
 import com.ultra.factory.method.IMessage;
 import com.ultra.factory.method.IMessageFactory;
-import com.ultra.factory.method.impl.EmailMessageFactory;
-import com.ultra.factory.method.impl.SmsMessageFactory;
+import com.ultra.factory.method.MessageConstant;
+import com.ultra.factory.method.impl.AndroidMessageFactory;
+import com.ultra.factory.method.impl.IosMessageFactory;
 import com.ultra.factory.simple.Conn;
 import com.ultra.factory.simple.SimpleFactory;
 import com.ultra.observer.IObserver;
@@ -65,20 +66,24 @@ public class DesignPatternTest {
     @Test
     public void testMethodFactory() throws Exception {
 
-        IMessageFactory sms = new SmsMessageFactory();
-        IMessage smsm = sms.create();
-        smsm.sendMessage();
+        IMessageFactory androidMessageFactory = new AndroidMessageFactory();
+        IMessage smsAndroid = androidMessageFactory.create(MessageConstant.SMS);
+        smsAndroid.sendMessage("hello,I am sms android");
+        IMessage emailAndroid = androidMessageFactory.create(MessageConstant.EMAIL);
+        emailAndroid.sendMessage("hello,I am email android");
 
-        IMessageFactory email = new EmailMessageFactory();
-        IMessage emailm = email.create();
-        emailm.sendMessage();
+        IMessageFactory iosMessageFactory = new IosMessageFactory();
+        IMessage smsIos = iosMessageFactory.create(MessageConstant.SMS);
+        smsIos.sendMessage("hello,I am sms ios");
+        IMessage emailIos = iosMessageFactory.create(MessageConstant.EMAIL);
+        emailIos.sendMessage("hello,I am email ios");
     }
 
     /**
      * 抽象工厂模式:系统的产品多于一个产品族,而系统只消费某一族的产品.
      */
     @Test
-    public void testAbstrFactory() {
+    public void testAbstractFactory() {
         AbstractFactory windowsFactory = new WindowsFactory();
         Button windowsButton = windowsFactory.createButton();
         windowsButton.process();
@@ -92,7 +97,6 @@ public class DesignPatternTest {
     }
 
 
-    // =============================责任链模式=================================================
     @Test
     public void testChain() {
         // 设定过滤规则，对msg字符串进行过滤处理
