@@ -1,5 +1,6 @@
 package com.ultra;
 
+import com.ultra.adapter.object.*;
 import com.ultra.chain.*;
 import com.ultra.decorator.*;
 import com.ultra.factory.abstr.AbstractFactory;
@@ -18,6 +19,9 @@ import com.ultra.observer.IObserver;
 import com.ultra.observer.impl.CacheObserver;
 import com.ultra.observer.impl.DataSubject;
 import com.ultra.observer.impl.DbObserver;
+import com.ultra.singleton.LazyBetterSingleton;
+import com.ultra.singleton.LazySingleton;
+import com.ultra.singleton.Singleton;
 import org.junit.Test;
 
 public class DesignPatternTest {
@@ -96,6 +100,40 @@ public class DesignPatternTest {
         linuxText.getAll();
     }
 
+    /**
+     * 单例模式:
+     */
+    @Test
+    public void testSingleton() {
+        Singleton singleton = Singleton.getInstance();
+        System.out.println(singleton);
+        LazySingleton lazySingleton = LazySingleton.getInstance();
+        System.out.println(lazySingleton);
+        LazyBetterSingleton lazyBetterSingleton = LazyBetterSingleton.getInstance();
+        System.out.println(lazyBetterSingleton);
+    }
+
+
+    @Test
+    public void testFacade() {
+        //一个service调用别的service,dao
+    }
+
+    @Test
+    public void testObjectAdapter() {
+        //普通对象及调用
+        Duck duck = new MallardDuck();
+        duck.quack();
+        duck.fly();
+        //普通对象及调用
+        Turkey turkey = new WildTurkey();
+        turkey.gobble();
+        turkey.fly();
+        //适配对象:turkey被适配成duck
+        Duck turkeyAdapter = new TurkeyAdapter(turkey);
+        turkeyAdapter.quack();
+        turkeyAdapter.fly();
+    }
 
     @Test
     public void testChain() {
