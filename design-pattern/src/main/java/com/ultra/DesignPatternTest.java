@@ -22,6 +22,9 @@ import com.ultra.observer.impl.DbObserver;
 import com.ultra.singleton.LazyBetterSingleton;
 import com.ultra.singleton.LazySingleton;
 import com.ultra.singleton.Singleton;
+import com.ultra.templateMethod.Coffee;
+import com.ultra.templateMethod.Drink;
+import com.ultra.templateMethod.Tea;
 import org.junit.Test;
 
 public class DesignPatternTest {
@@ -113,12 +116,17 @@ public class DesignPatternTest {
         System.out.println(lazyBetterSingleton);
     }
 
-
+    /**
+     * 外观模式
+     */
     @Test
     public void testFacade() {
         //一个service调用别的service,dao
     }
 
+    /**
+     * 对象适配器
+     */
     @Test
     public void testObjectAdapter() {
         //普通对象及调用
@@ -133,6 +141,18 @@ public class DesignPatternTest {
         Duck turkeyAdapter = new TurkeyAdapter(turkey);
         turkeyAdapter.quack();
         turkeyAdapter.fly();
+    }
+
+    /**
+     * 模板方法
+     */
+    @Test
+    public void testTemplateMethod() {
+        Drink tea = new Tea();
+        tea.make();
+
+        Drink coffee = new Coffee();
+        coffee.make();
     }
 
     @Test
