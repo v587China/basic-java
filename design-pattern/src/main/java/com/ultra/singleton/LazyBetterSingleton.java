@@ -2,6 +2,8 @@ package com.ultra.singleton;
 
 /**
  * 场景:最好的方式
+ *
+ * @author admin
  */
 public class LazyBetterSingleton {
     private static LazyBetterSingleton singleton;
@@ -12,8 +14,9 @@ public class LazyBetterSingleton {
     public static final LazyBetterSingleton getInstance() {
         if (singleton == null) {
             synchronized (LazyBetterSingleton.class) {
-                if (singleton == null)
+                if (singleton == null) {
                     singleton = new LazyBetterSingleton();
+                }
             }
         }
         return singleton;
