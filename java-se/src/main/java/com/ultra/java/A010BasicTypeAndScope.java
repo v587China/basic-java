@@ -2,7 +2,7 @@ package com.ultra.java;
 
 import org.junit.Test;
 
-import java.util.Random;
+import java.util.Arrays;
 
 /**
  * 基本数据类型和作用域
@@ -57,6 +57,11 @@ public class A010BasicTypeAndScope {
      */
     private String str;
 
+    /**
+     * 基本数据类型默认值
+     *
+     * @param args null
+     */
     public static void main(String[] args) {
         A010BasicTypeAndScope demo = new A010BasicTypeAndScope();
         System.out.println(demo.b);
@@ -92,6 +97,9 @@ public class A010BasicTypeAndScope {
         System.out.println(s);
     }
 
+    /**
+     * 转移序列\ u
+     */
     @Test
     public void testChar() {
         System.out.println('\u4EFF');
@@ -125,8 +133,13 @@ public class A010BasicTypeAndScope {
         int cp = greeting.codePointAt(index);
         System.out.println(index);
         System.out.println(cp);
+    }
 
-        // 辅助字符码点
+    /**
+     * 码点转化char,String以及打印辅助字符码点
+     */
+    @Test
+    public void testAssistCode() {
         int x = 0x1D546;
         String y = new String(Character.toChars(x));
         System.out.println(y);
@@ -134,10 +147,16 @@ public class A010BasicTypeAndScope {
         System.out.println((int) y.charAt(1));
     }
 
+    /**
+     * 字符串和码点相互转化
+     */
     @Test
-    public void testCode() {
-        int x = 0xFE10;
-        String y = new String(Character.toChars(x));
-        System.out.println(y);
+    public void testMutualConvert() {
+        String str = "Hello";
+        int[] codePoints = str.codePoints().toArray();
+        System.out.println(Arrays.toString(codePoints));
+        str = new String(codePoints, 0, codePoints.length);
+        System.out.println(str);
     }
+
 }
