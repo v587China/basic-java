@@ -2,6 +2,9 @@ package com.ultra.pojo;
 
 import lombok.*;
 
+/**
+ * @author admin
+ */
 @Setter
 @Getter
 @ToString
