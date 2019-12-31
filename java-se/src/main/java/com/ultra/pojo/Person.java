@@ -15,4 +15,7 @@ public class Person {
     private String name;
     private Integer id;
 
+    public Person(String name) {
+        this.name = name;
+    }
 }
