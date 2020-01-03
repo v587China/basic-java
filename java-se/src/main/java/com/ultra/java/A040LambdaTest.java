@@ -205,7 +205,6 @@ public class A040LambdaTest {
     }
 
     /**
-     * TODO
      * Consumer andThen
      */
     @Test
