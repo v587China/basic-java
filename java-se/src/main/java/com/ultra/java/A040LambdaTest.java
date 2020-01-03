@@ -12,8 +12,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -197,21 +196,163 @@ public class A040LambdaTest {
         return supplier.get();
     }
 
-    /**
-     * TODO
-     */
     @Test
     public void testLambdaConsumer() {
         Person person = new Person();
-        accept(t -> t.setName("abc"), person).andThen(t -> t.setName("bcd"));
+        person.setName("abc");
+        accept(t -> t.setName("jd-" + t.getName()), person);
         System.out.println(person);
     }
 
-    private <T> Consumer<T> accept(Consumer<T> consumer, T t) {
-        consumer.accept(t);
-        return consumer;
+    /**
+     * TODO
+     * Consumer andThen
+     */
+    @Test
+    public void testLambdaConsumerAndThen() {
+        Person person = new Person();
+        person.setId(1001);
+        person.setName("abc");
+        Consumer<Person> consumer = t -> t.setName("jd-" + t.getName());
+        accept(consumer.andThen(t -> t.setId(t.getId() + 10000)), person);
+        System.out.println(person);
     }
 
+    private <T> void accept(Consumer<T> consumer, T t) {
+        consumer.accept(t);
+    }
+
+    @Test
+    public void testLambdaBiConsumer() {
+        Person person = new Person();
+        person.setName("abc");
+        String prefix = "jd-";
+        accept((t, u) -> {
+            t.setName(u + t.getName());
+        }, person, prefix);
+        System.out.println(person);
+    }
+
+    private <T, U> void accept(BiConsumer<T, U> biConsumer, T t, U u) {
+        biConsumer.accept(t, u);
+    }
+
+    @Test
+    public void testFunction() {
+        Person person = new Person();
+        person.setName("ty-abc");
+        //当有重载方法时必须显式的指定返回值类型,不指定返回值会匹配apply(UnaryOperator<T> unaryOperator, T t)
+//        Boolean apply = apply((t) -> {
+//            if (t.getName().startsWith(oldPrefix)) {
+//                t.setName("jd-" + t.getName());
+//                return true;
+//            }
+//            return false;
+//        }, person);
+        Function<Person, Boolean> function = (t) -> {
+            if (t.getName().startsWith(oldPrefix)) {
+                t.setName("jd-" + t.getName());
+                return true;
+            }
+            return false;
+        };
+        Boolean apply = apply(function, person);
+        System.out.println(apply);
+    }
+
+    private <T, R> R apply(Function<T, R> function, T t) {
+        return function.apply(t);
+    }
+
+    private String oldPrefix = "ty-";
+    private String newPrefix = "jd-";
+
+    @Test
+    public void testBiFunction() {
+        Person person = new Person();
+        person.setName("ty-abc");
+//        Boolean apply = apply((t, u) -> {
+//            if (t.getName().startsWith(oldPrefix)) {
+//                t.setName(t.getName().replace(u, "oldPrefix"));
+//                return true;
+//            }
+//            return false;
+//        }, person, newPrefix);
+        BiFunction<Person, String, Boolean> biFunction = (t, u) -> {
+            if (t.getName().startsWith(oldPrefix)) {
+                t.setName(t.getName().replace(u, "oldPrefix"));
+                return true;
+            }
+            return false;
+        };
+        Boolean apply = apply(biFunction, person, newPrefix);
+        System.out.println(apply);
+    }
+
+    private <T, U, R> R apply(BiFunction<T, U, R> biFunction, T t, U u) {
+        return biFunction.apply(t, u);
+    }
+
+    @Test
+    public void testUnaryOperator() {
+        Person person = new Person();
+        person.setName("ty-abc");
+        UnaryOperator<Person> unaryOperator = t -> {
+            t.setName(t.getName().replace(newPrefix, "oldPrefix"));
+            return t;
+        };
+        person = apply(unaryOperator, person);
+        System.out.println(person);
+    }
+
+    private <T> T apply(UnaryOperator<T> unaryOperator, T t) {
+        return unaryOperator.apply(t);
+    }
+
+    @Test
+    public void testBinaryOperator() {
+        Person person = new Person();
+        person.setName("ty-abc");
+        Person newPerson = new Person();
+        BinaryOperator<Person> binaryOperator = (t1, t2) -> {
+            t2.setName(t1.getName().replace(oldPrefix, newPrefix));
+            return t2;
+        };
+        newPerson = apply(binaryOperator, person, newPerson);
+        System.out.println(person);
+        System.out.println(newPerson);
+    }
+
+    private <T> T apply(BinaryOperator<T> binaryOperator, T t1, T t2) {
+        return binaryOperator.apply(t1, t2);
+    }
+
+    @Test
+    public void testPredicate() {
+        Person person = new Person();
+        person.setName("ty-abc");
+        Predicate<Person> predicate = t -> t.getName().startsWith(oldPrefix);
+        boolean result = apply(predicate, person);
+        System.out.println(result);
+    }
+
+    private <T> boolean apply(Predicate<T> predicate, T t) {
+        return predicate.test(t);
+    }
+
+
+    @Test
+    public void testBiPredicate() {
+        Person person = new Person();
+        person.setName("ty-abc");
+        BiPredicate<Person, String> predicate = (t, u) -> t.getName().startsWith(u);
+        boolean result = apply(predicate, person, newPrefix);
+        System.out.println(result);
+    }
+
+    private <T, U> boolean apply(BiPredicate<T, U> predicate, T t, U u) {
+        return predicate.test(t, u);
+    }
 
     @Test
     public void map() {
