@@ -16,7 +16,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public void addPerson(Person person) {
-        persons.put(person.getId(), person);
+        persons.put(person.getNo(), person);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class ServiceImpl implements Service {
 
     @Override
     public void updPerson(Person person) {
-        persons.put(person.getId(), person);
+        persons.put(person.getNo(), person);
     }
 
     public static Map<Integer, Person> getPersons() {

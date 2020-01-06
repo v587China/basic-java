@@ -27,6 +27,13 @@ import java.util.stream.Stream;
 public class A040LambdaTest {
 
 
+    private static final int JD_MIN_NO = 1000;
+    private static final int JD_NEW_BASE_NO = 10000;
+
+    private static final String TY_PREFIX = "ty-";
+    private static final String JD_PREFIX = "jd-";
+
+
     @Test
     public void testInterface1() {
         String[] strings = {"123", "25", "7686", "92872", "b"};
@@ -122,7 +129,7 @@ public class A040LambdaTest {
     }
 
     /**
-     * 二 TODO方法引用形式
+     * 二 方法引用形式
      * Class::staticMethod
      * 参数传递给方法
      */
@@ -150,7 +157,7 @@ public class A040LambdaTest {
     public void testMethodReference4() {
         Person[] persons = new Person[10];
         Arrays.sort(persons, Comparator.comparing(Person::getName));
-        Arrays.sort(persons, Comparator.comparing(Person::getName).thenComparing(Person::getId));
+        Arrays.sort(persons, Comparator.comparing(Person::getName).thenComparing(Person::getNo));
         Arrays.sort(persons, Comparator.comparing(Person::getName, Comparator.comparingInt(String::length)));
     }
 
@@ -200,7 +207,7 @@ public class A040LambdaTest {
     public void testLambdaConsumer() {
         Person person = new Person();
         person.setName("abc");
-        accept(t -> t.setName("jd-" + t.getName()), person);
+        accept(t -> t.setName(JD_PREFIX + t.getName()), person);
         System.out.println(person);
     }
 
@@ -210,10 +217,10 @@ public class A040LambdaTest {
     @Test
     public void testLambdaConsumerAndThen() {
         Person person = new Person();
-        person.setId(1001);
+        person.setNo(1001);
         person.setName("abc");
-        Consumer<Person> consumer = t -> t.setName("jd-" + t.getName());
-        accept(consumer.andThen(t -> t.setId(t.getId() + 10000)), person);
+        Consumer<Person> consumer = t -> t.setName(JD_PREFIX + t.getName());
+        accept(consumer.andThen(t -> t.setNo(t.getNo() + JD_NEW_BASE_NO)), person);
         System.out.println(person);
     }
 
@@ -225,10 +232,23 @@ public class A040LambdaTest {
     public void testLambdaBiConsumer() {
         Person person = new Person();
         person.setName("abc");
-        String prefix = "jd-";
         accept((t, u) -> {
             t.setName(u + t.getName());
-        }, person, prefix);
+        }, person, JD_PREFIX);
+        System.out.println(person);
+    }
+
+    @Test
+    public void testLambdaBiConsumerAndThen() {
+        Person person = new Person();
+        person.setName("abc");
+        person.setNo(1001);
+        BiConsumer<Person, String> biConsumer = (t, u) -> {
+            t.setName(u + t.getName());
+        };
+        accept(biConsumer.andThen((t, u) -> {
+            t.setNo(JD_NEW_BASE_NO + t.getNo());
+        }), person, JD_PREFIX);
         System.out.println(person);
     }
 
@@ -239,18 +259,18 @@ public class A040LambdaTest {
     @Test
     public void testFunction() {
         Person person = new Person();
-        person.setName("ty-abc");
+        person.setName("abc");
         //当有重载方法时必须显式的指定返回值类型,不指定返回值会匹配apply(UnaryOperator<T> unaryOperator, T t)
 //        Boolean apply = apply((t) -> {
-//            if (t.getName().startsWith(oldPrefix)) {
-//                t.setName("jd-" + t.getName());
+//            if (t.getNo() > JD_MIN_NO) {
+//                t.setName(JD_PREFIX + t.getName());
 //                return true;
 //            }
 //            return false;
 //        }, person);
-        Function<Person, Boolean> function = (t) -> {
-            if (t.getName().startsWith(oldPrefix)) {
-                t.setName("jd-" + t.getName());
+        Function<Person, Boolean> function = t -> {
+            if (t.getNo() > JD_MIN_NO) {
+                t.setName(JD_PREFIX + t.getName());
                 return true;
             }
             return false;
@@ -263,28 +283,26 @@ public class A040LambdaTest {
         return function.apply(t);
     }
 
-    private String oldPrefix = "ty-";
-    private String newPrefix = "jd-";
-
     @Test
     public void testBiFunction() {
         Person person = new Person();
-        person.setName("ty-abc");
+        person.setNo(1001);
+        person.setName("abc");
 //        Boolean apply = apply((t, u) -> {
-//            if (t.getName().startsWith(oldPrefix)) {
-//                t.setName(t.getName().replace(u, "oldPrefix"));
+//            if (t.getNo() > JD_MIN_NO) {
+//                t.setName(JD_PREFIX + t.getName());
 //                return true;
 //            }
 //            return false;
 //        }, person, newPrefix);
         BiFunction<Person, String, Boolean> biFunction = (t, u) -> {
-            if (t.getName().startsWith(oldPrefix)) {
-                t.setName(t.getName().replace(u, "oldPrefix"));
+            if (t.getNo() > JD_MIN_NO) {
+                t.setName(u + t.getName());
                 return true;
             }
             return false;
         };
-        Boolean apply = apply(biFunction, person, newPrefix);
+        Boolean apply = apply(biFunction, person, JD_PREFIX);
         System.out.println(apply);
     }
 
@@ -295,9 +313,9 @@ public class A040LambdaTest {
     @Test
     public void testUnaryOperator() {
         Person person = new Person();
-        person.setName("ty-abc");
+        person.setName("abc");
         UnaryOperator<Person> unaryOperator = t -> {
-            t.setName(t.getName().replace(newPrefix, "oldPrefix"));
+            t.setName(JD_PREFIX + t.getName());
             return t;
         };
         person = apply(unaryOperator, person);
@@ -311,10 +329,10 @@ public class A040LambdaTest {
     @Test
     public void testBinaryOperator() {
         Person person = new Person();
-        person.setName("ty-abc");
+        person.setName("abc");
         Person newPerson = new Person();
         BinaryOperator<Person> binaryOperator = (t1, t2) -> {
-            t2.setName(t1.getName().replace(oldPrefix, newPrefix));
+            t2.setName(JD_PREFIX + t1.getName());
             return t2;
         };
         newPerson = apply(binaryOperator, person, newPerson);
@@ -329,8 +347,8 @@ public class A040LambdaTest {
     @Test
     public void testPredicate() {
         Person person = new Person();
-        person.setName("ty-abc");
-        Predicate<Person> predicate = t -> t.getName().startsWith(oldPrefix);
+        person.setName("abc");
+        Predicate<Person> predicate = t -> t.getName().startsWith(JD_PREFIX);
         boolean result = apply(predicate, person);
         System.out.println(result);
     }
@@ -343,9 +361,9 @@ public class A040LambdaTest {
     @Test
     public void testBiPredicate() {
         Person person = new Person();
-        person.setName("ty-abc");
+        person.setName("jd-abc");
         BiPredicate<Person, String> predicate = (t, u) -> t.getName().startsWith(u);
-        boolean result = apply(predicate, person, newPrefix);
+        boolean result = apply(predicate, person, JD_PREFIX);
         System.out.println(result);
     }
 

@@ -13,7 +13,7 @@ import lombok.*;
 public class Person {
 
     private String name;
-    private Integer id;
+    private Integer no;
 
     public Person(String name) {
         this.name = name;
