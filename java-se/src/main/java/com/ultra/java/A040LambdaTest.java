@@ -1,10 +1,6 @@
 package com.ultra.java;
 
-import com.ultra.pojo.Person;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.junit.Test;
 
 import javax.swing.Timer;
@@ -65,7 +61,7 @@ public class A040LambdaTest {
         String[] strings = {"123", "25", "7686", "92872", "b"};
         System.out.println(Arrays.toString(strings));
         Comparator<String> lengthComparator = (String str1, String str2) -> {
-            return str1.compareTo(str2);
+            return str1.length() - str2.length();
         };
         Arrays.sort(strings, lengthComparator);
         System.out.println(Arrays.toString(strings));
@@ -76,14 +72,14 @@ public class A040LambdaTest {
         String[] strings = {"123", "25", "7686", "92872", "b"};
         System.out.println(Arrays.toString(strings));
         Arrays.sort(strings, (String str1, String str2) -> {
-            return str1.compareTo(str2);
+            return str1.length() - str2.length();
         });
         System.out.println(Arrays.toString(strings));
     }
 
     /**
      * 参数类型可省略
-     * 函数体只有一行可以省略{},和return(如果有返回值)
+     * 函数体只有一行可以省略{},return(如果有返回值),最后的分号
      */
     @Test
     public void testLambdaAbbr1() {
@@ -108,35 +104,30 @@ public class A040LambdaTest {
     /**
      * 方法引用形式一
      * object::instanceMethod
-     * 参数传递给方法
+     * 参数省略,并且参数是方法的实参(如果有参数)
      */
     @Test
     public void testMethodReference() {
-        Timer t0 = new Timer(1000, System.out::println);
-        t0.start();
-
         ActionListener listener = System.out::println;
-        Timer t1 = new Timer(1000, listener);
-        t1.start();
-
-        Timer t2 = new Timer(1000, System.out::println);
-        t2.start();
-
-        Timer t3 = new Timer(1000, event -> {
-            System.out.println(event);
-        });
-        t3.start();
+        Timer t = new Timer(1000, listener);
+        t.start();
     }
 
     /**
      * 二 方法引用形式
      * Class::staticMethod
-     * 参数传递给方法
+     * 参数省略,并且参数是方法的实参(如果有参数)
      */
     @Test
     public void testMethodReference2() {
-        Error error = getBean(Error::buildError);
-        System.out.println(error);
+        //无参
+        Supplier<Person> personSupplier = Person::build;
+        Person person = personSupplier.get();
+        System.out.println(person);
+        //有参
+        Consumer<String> personConsumer = Person::print;
+        personConsumer.accept("abc");
+        System.out.println(personConsumer);
     }
 
     /**
@@ -149,7 +140,8 @@ public class A040LambdaTest {
     public void testMethodReference3() {
         String[] strings = {"123", "25", "7686", "92872", "b"};
         System.out.println(Arrays.toString(strings));
-        Arrays.sort(strings, Comparator.comparingInt(String::length));
+        ToIntFunction<String> toIntFunction = String::length;
+        Arrays.sort(strings, Comparator.comparingInt(toIntFunction));
         System.out.println(Arrays.toString(strings));
     }
 
@@ -184,30 +176,23 @@ public class A040LambdaTest {
 
     @Test
     public void testLambdaRunnable() {
-        run(() -> System.out.println("Hello world"));
-    }
-
-    private void run(Runnable runnable) {
-        for (int i = 0; i < 5; i++) {
-            runnable.run();
-        }
+        Runnable runnable = () -> System.out.println("Hello world");
+        runnable.run();
     }
 
     @Test
     public void testLambdaSupplier() {
-        Person person = getBean(Person::new);
+        Supplier<Person> supplier = Person::new;
+        Person person = supplier.get();
         System.out.println(person);
-    }
-
-    private <T> T getBean(Supplier<T> supplier) {
-        return supplier.get();
     }
 
     @Test
     public void testLambdaConsumer() {
         Person person = new Person();
         person.setName("abc");
-        accept(t -> t.setName(JD_PREFIX + t.getName()), person);
+        Consumer<Person> consumer = t -> t.setName(JD_PREFIX + t.getName());
+        consumer.accept(person);
         System.out.println(person);
     }
 
@@ -219,22 +204,19 @@ public class A040LambdaTest {
         Person person = new Person();
         person.setNo(1001);
         person.setName("abc");
-        Consumer<Person> consumer = t -> t.setName(JD_PREFIX + t.getName());
-        accept(consumer.andThen(t -> t.setNo(t.getNo() + JD_NEW_BASE_NO)), person);
+        Consumer<Person> nameConsumer = t -> t.setName(JD_PREFIX + t.getName());
+        Consumer<Person> noConsumer = t -> t.setNo(JD_NEW_BASE_NO + t.getNo());
+        Consumer<Person> nameNoConsumer = nameConsumer.andThen(noConsumer);
+        nameNoConsumer.accept(person);
         System.out.println(person);
-    }
-
-    private <T> void accept(Consumer<T> consumer, T t) {
-        consumer.accept(t);
     }
 
     @Test
     public void testLambdaBiConsumer() {
         Person person = new Person();
         person.setName("abc");
-        accept((t, u) -> {
-            t.setName(u + t.getName());
-        }, person, JD_PREFIX);
+        BiConsumer<Person, String> biConsumer = (t, u) -> t.setName(u + t.getName());
+        biConsumer.accept(person, JD_PREFIX);
         System.out.println(person);
     }
 
@@ -243,44 +225,95 @@ public class A040LambdaTest {
         Person person = new Person();
         person.setName("abc");
         person.setNo(1001);
-        BiConsumer<Person, String> biConsumer = (t, u) -> {
+        BiConsumer<Person, String> nameBiConsumer = (t, u) -> {
             t.setName(u + t.getName());
         };
-        accept(biConsumer.andThen((t, u) -> {
+        BiConsumer<Person, String> noBiConsumer = (t, u) -> {
             t.setNo(JD_NEW_BASE_NO + t.getNo());
-        }), person, JD_PREFIX);
+        };
+        BiConsumer<Person, String> nameNoBiConsumer = nameBiConsumer.andThen(noBiConsumer);
+        nameNoBiConsumer.accept(person, JD_PREFIX);
         System.out.println(person);
-    }
-
-    private <T, U> void accept(BiConsumer<T, U> biConsumer, T t, U u) {
-        biConsumer.accept(t, u);
     }
 
     @Test
     public void testFunction() {
         Person person = new Person();
+        person.setNo(1001);
         person.setName("abc");
-        //当有重载方法时必须显式的指定返回值类型,不指定返回值会匹配apply(UnaryOperator<T> unaryOperator, T t)
-//        Boolean apply = apply((t) -> {
-//            if (t.getNo() > JD_MIN_NO) {
-//                t.setName(JD_PREFIX + t.getName());
-//                return true;
-//            }
-//            return false;
-//        }, person);
         Function<Person, Boolean> function = t -> {
-            if (t.getNo() > JD_MIN_NO) {
-                t.setName(JD_PREFIX + t.getName());
+            Integer no = t.getNo();
+            if (no > JD_MIN_NO && no < JD_NEW_BASE_NO) {
+                t.setNo(JD_NEW_BASE_NO + no);
                 return true;
             }
             return false;
         };
-        Boolean apply = apply(function, person);
+        Boolean apply = function.apply(person);
         System.out.println(apply);
     }
 
-    private <T, R> R apply(Function<T, R> function, T t) {
-        return function.apply(t);
+    @Test
+    public void testFunctionCompose() {
+        Person person = new Person();
+        person.setNo(1001);
+        person.setName("abc");
+        Function<Boolean, String> nameFunction = t -> {
+            if (t) {
+                return JD_PREFIX;
+            }
+            return TY_PREFIX;
+        };
+        Function<Person, Boolean> noFunction = t -> {
+            Integer no = t.getNo();
+            if (no < JD_MIN_NO) {
+                return false;
+            }
+            if (no < JD_NEW_BASE_NO) {
+                t.setNo(JD_NEW_BASE_NO + no);
+            }
+            return true;
+        };
+        Function<Person, String> prefixFunction = noFunction.andThen(nameFunction);
+        String prefix = prefixFunction.apply(person);
+        person.setName(prefix + person.getName());
+        System.out.println(person);
+    }
+
+    @Test
+    public void testFunctionAndThen() {
+        Person person = new Person();
+        person.setNo(1001);
+        person.setName("abc");
+        Function<Person, Boolean> noFunction = t -> {
+            Integer no = t.getNo();
+            if (no < JD_MIN_NO) {
+                return false;
+            }
+            if (no < JD_NEW_BASE_NO) {
+                t.setNo(JD_NEW_BASE_NO + no);
+            }
+            return true;
+        };
+        Function<Boolean, String> nameFunction = t -> {
+            if (t) {
+                return JD_PREFIX;
+            }
+            return TY_PREFIX;
+        };
+        Function<Person, String> prefixFunction = noFunction.andThen(nameFunction);
+        String prefix = prefixFunction.apply(person);
+        person.setName(prefix + person.getName());
+        System.out.println(person);
+    }
+
+    @Test
+    public void testFunctionIdentity() {
+        Person person = new Person();
+        person.setName("abc");
+        Function<Person, Person> identity = Function.identity();
+        Person apply = identity.apply(person);
+        System.out.println(apply == person);
     }
 
     @Test
@@ -288,13 +321,6 @@ public class A040LambdaTest {
         Person person = new Person();
         person.setNo(1001);
         person.setName("abc");
-//        Boolean apply = apply((t, u) -> {
-//            if (t.getNo() > JD_MIN_NO) {
-//                t.setName(JD_PREFIX + t.getName());
-//                return true;
-//            }
-//            return false;
-//        }, person, newPrefix);
         BiFunction<Person, String, Boolean> biFunction = (t, u) -> {
             if (t.getNo() > JD_MIN_NO) {
                 t.setName(u + t.getName());
@@ -302,12 +328,8 @@ public class A040LambdaTest {
             }
             return false;
         };
-        Boolean apply = apply(biFunction, person, JD_PREFIX);
+        Boolean apply = biFunction.apply(person, JD_PREFIX);
         System.out.println(apply);
-    }
-
-    private <T, U, R> R apply(BiFunction<T, U, R> biFunction, T t, U u) {
-        return biFunction.apply(t, u);
     }
 
     @Test
@@ -318,12 +340,8 @@ public class A040LambdaTest {
             t.setName(JD_PREFIX + t.getName());
             return t;
         };
-        person = apply(unaryOperator, person);
+        person = unaryOperator.apply(person);
         System.out.println(person);
-    }
-
-    private <T> T apply(UnaryOperator<T> unaryOperator, T t) {
-        return unaryOperator.apply(t);
     }
 
     @Test
@@ -335,13 +353,9 @@ public class A040LambdaTest {
             t2.setName(JD_PREFIX + t1.getName());
             return t2;
         };
-        newPerson = apply(binaryOperator, person, newPerson);
+        newPerson = binaryOperator.apply(person, newPerson);
         System.out.println(person);
         System.out.println(newPerson);
-    }
-
-    private <T> T apply(BinaryOperator<T> binaryOperator, T t1, T t2) {
-        return binaryOperator.apply(t1, t2);
     }
 
     @Test
@@ -349,37 +363,17 @@ public class A040LambdaTest {
         Person person = new Person();
         person.setName("abc");
         Predicate<Person> predicate = t -> t.getName().startsWith(JD_PREFIX);
-        boolean result = apply(predicate, person);
+        boolean result = predicate.test(person);
         System.out.println(result);
     }
-
-    private <T> boolean apply(Predicate<T> predicate, T t) {
-        return predicate.test(t);
-    }
-
 
     @Test
     public void testBiPredicate() {
         Person person = new Person();
         person.setName("jd-abc");
         BiPredicate<Person, String> predicate = (t, u) -> t.getName().startsWith(u);
-        boolean result = apply(predicate, person, JD_PREFIX);
+        boolean result = predicate.test(person, JD_PREFIX);
         System.out.println(result);
-    }
-
-    private <T, U> boolean apply(BiPredicate<T, U> predicate, T t, U u) {
-        return predicate.test(t, u);
-    }
-
-    @Test
-    public void map() {
-        Map<String, String> maps = new HashMap<>(4);
-        maps.put("a", "AA");
-        maps.put("b", "BB");
-        maps.put("c", "CC");
-        maps.forEach((key, value) -> {
-            System.out.println(key + ":" + value);
-        });
     }
 }
 
@@ -394,24 +388,22 @@ class LengthComparator implements Comparator<String> {
 @Setter
 @Getter
 @ToString
+@NoArgsConstructor
 @AllArgsConstructor
-class Error {
+class Person {
 
-    /**
-     * 错误码
-     */
-    private int code;
-    /**
-     * 错误描述
-     */
-    private String message;
+    private String name;
+    private Integer no;
 
-    /**
-     * 错误码和错误信息
-     *
-     * @return Error
-     */
-    static Error buildError() {
-        return new Error(404, "page is not found");
+    public Person(String name) {
+        this.name = name;
+    }
+
+    public static Person build() {
+        return new Person();
+    }
+
+    public static void print(String name) {
+        System.out.println(name);
     }
 }

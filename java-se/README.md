@@ -23,33 +23,9 @@
 - 	创建集合时确定集合长度,ensureCapacity,trimToSize
 
 ## 第六章接口,lambda表达式,内部类
-- 	接口:解决多继承的问题,不能被实例化,所以不能有实例域,构造方法;方法可以有自己的默认实现,静态方法
-- 	抽象类:解决子类共有和各自方法的实现
-- 	类:面向对象编程的灵魂
+-   处理lambda表达式
 
-### lambda表达式
-
-- 	只有一个抽象方法的接口称为函数式接口(functional interface),可以提供一个lambda表达式,lambda表达式中不能改变变量
-
-- 	函数式接口(functional interface),建议使用@FunctionalInterface注解来标记并约束这个接口
-
-- 	方法引用:已经有现成的方法可以完成你想要传递到其他代码的某个动作
-
--   用::操作符分隔方法名与对象或类名.主要有3种情况
-
-       1. object::instance Method;可以使用this,super作为目标
-    
-       2. Class::static Method
-    
-       3. Class::instance Method第1个参数会成为方法的目标
-
--  构造器引用:类型::new;eg:Integer::new.int[]::new
-
-### 内部类
-
-
-
-
+ 
 ## 第8章泛型程序设计
 
 -   泛型程序设计(Generic programming)意味着编写的代码可以被很多不同类型的对象所重用

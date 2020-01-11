@@ -18,4 +18,8 @@ public class Person {
     public Person(String name) {
         this.name = name;
     }
+
+    public static Person build() {
+        return new Person("default", 1);
+    }
 }
