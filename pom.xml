@@ -27,6 +27,7 @@
         <module>jdbc</module>
         <module>web</module>
         <module>design-pattern</module>
+        <module>data-structure</module>
     </modules>
 
 </project>
