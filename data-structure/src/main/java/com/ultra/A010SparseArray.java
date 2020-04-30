@@ -9,7 +9,6 @@ import java.util.Arrays;
  * 稀疏数组转二维数组
  *
  * @author fan
- * @date 2020/4/18
  */
 public class A010SparseArray {
     /**
@@ -87,8 +86,6 @@ public class A010SparseArray {
      *
      * @param sparse 稀疏数组
      * @return 二维数组
-     * @author fan
-     * @date 2020/4/18
      */
     public int[][] sparseToArray(int[][] sparse) {
         if (sparse == null || sparse.length == 0) {
