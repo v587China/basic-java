@@ -10,7 +10,7 @@ import java.util.Arrays;
  *
  * @author fan
  */
-public class A010SparseArray {
+public class A010SparseArrayTest {
     /**
      * (一)原始而二维数组
      * 0 0 0 0 0 0 0 0 0 0 0
