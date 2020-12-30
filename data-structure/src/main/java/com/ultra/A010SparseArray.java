@@ -49,16 +49,16 @@ public class A010SparseArray {
      * @param array 二维数组
      * @return 稀疏数组
      */
-    public int[][] arrayToSparse(int[][] array) {
+    private int[][] arrayToSparse(int[][] array) {
         if (array == null || array.length == 0) {
             return null;
         }
         int sum = 0;
         int length = array.length;
         int secondLength = array[0].length;
-        for (int i = 0; i < length; i++) {
+        for (int[] ints : array) {
             for (int j = 0; j < secondLength; j++) {
-                if (array[i][j] != 0) {
+                if (ints[j] != 0) {
                     sum++;
                 }
             }
@@ -87,7 +87,7 @@ public class A010SparseArray {
      * @param sparse 稀疏数组
      * @return 二维数组
      */
-    public int[][] sparseToArray(int[][] sparse) {
+    private int[][] sparseToArray(int[][] sparse) {
         if (sparse == null || sparse.length == 0) {
             return null;
         }
