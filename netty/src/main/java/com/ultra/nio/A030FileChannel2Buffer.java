@@ -14,16 +14,18 @@ public class A030FileChannel2Buffer {
     public static void main(String[] args) throws Exception {
         FileInputStream inputStream = new FileInputStream("/Users/admin/Documents/test.txt");
         FileChannel fileChannel = inputStream.getChannel();
-        ByteBuffer byteBuffer = ByteBuffer.allocate(512);
-        int read = fileChannel.read(byteBuffer);
-        byteBuffer.flip();
-        byte[] bytes = new byte[read];
-        int index = 0;
-        while (byteBuffer.hasRemaining()) {
-            bytes[index] = byteBuffer.get();
-            index++;
+
+
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1);
+        while (true) {
+            byteBuffer.clear();
+            int read = fileChannel.read(byteBuffer);
+            if (read == -1) {
+                break;
+            }
+            byteBuffer.flip();
+            System.out.println(new String(byteBuffer.array()));
         }
-        System.out.println(new String(bytes));
         fileChannel.close();
         inputStream.close();
     }
